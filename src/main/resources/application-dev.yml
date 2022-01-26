@@ -1,0 +1,16 @@
+# 开发环境配置
+
+# 数据源配置
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/school-club?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: 1999119
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+# 日志配置
+logging:
+  level:
+    com.egao: DEBUG
+    com.baomidou.mybatisplus: DEBUG

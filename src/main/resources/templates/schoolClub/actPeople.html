@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="管理"/>
+    <style>
+        #clubPeopleTable + .layui-table-view .layui-table-body tbody > tr > td {
+            padding: 0;
+        }
+
+        #clubPeopleTable + .layui-table-view .layui-table-body tbody > tr > td > .layui-table-cell {
+            height: 48px;
+            line-height: 48px;
+        }
+
+        #clubPeopleTable1 + .layui-table-view .layui-table-body tbody > tr > td {
+            padding: 0;
+        }
+
+        #clubPeopleTable1 + .layui-table-view .layui-table-body tbody > tr > td > .layui-table-cell {
+            height: 48px;
+            line-height: 48px;
+        }
+
+        .tb-img-circle {
+            width: 40px;
+            height: 40px;
+            cursor: zoom-in;
+            border-radius: 50%;
+            border: 2px solid #dddddd;
+        }
+
+        /** 查看详情弹窗样式 */
+        .paper-info-group {
+            padding: 15px 25px;
+        }
+
+        .paper-info-group h3 {
+            font-weight: bold;
+            color: #000000;
+            padding-bottom: 8px;
+        }
+
+        .paper-info-group p {
+            color: #666;
+            padding-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .paper-info-group .paper-info-group-imgs {
+            padding-top: 5px;
+        }
+
+        .paper-info-group .paper-info-group-imgs img {
+            margin-right: 15px;
+            margin-bottom: 15px;
+            cursor: zoom-in;
+        }
+
+        .paper-info-group .paper-info-group-imgs img:last-child {
+            margin-right: 0;
+        }
+
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief" lay-filter="tableXTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">创建的活动</li>
+                <li>参加的活动</li>
+            </ul>
+            <div class="layui-tab-content">
+                <!-- 社团运营表格 -->
+                <div class="layui-tab-item layui-show">
+                    <!-- 数据表格 -->
+                    <table id="clubPeopleTable" lay-filter="clubPeopleTable"></table>
+                </div>
+                <div class="layui-tab-item">
+                    <table id="clubPeopleTable1" lay-filter="clubPeopleTable1"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 列表操作 -->
+<script type="text/html" id="clubPeopleTbBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">详情</a>
+</script>
+
+
+<!-- 表格操作列 -->
+<script type="text/html" id="eClubPeopleLook">
+    <span class="layui-text">
+        <a href="javascript:;" lay-event="look">
+            <i class="layui-icon" style="font-size: 12px;">&#xe61a;</i> 查看活动成员
+        </a>
+    </span>
+</script>
+
+
+<!-- 查看详情弹窗 -->
+<script type="text/html" id="eDialogInfoDialog">
+    <div class="paper-info-group">
+        <h3>社团id</h3>
+        <p>{{d.clubId}}</p>
+        <h3>日期</h3>
+        <p>{{d.startTime}}</p>
+        <h3>时间</h3>
+        <p>{{d.endTime}}</p>
+        <h3>活动介绍</h3>
+        <p style="word-wrap: break-word; word-break: normal;">{{d.actIntroduce}}</p>
+    </div>
+</script>
+
+<!-- 列表操作 -->
+<script type="text/html" id="clubPeopleTbBar1">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delClubPeople">删除</a>
+</script>
+
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'admin', 'dropdown', 'element', 'laydate', 'upload', "laytpl"], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var admin = layui.admin;
+        var element = layui.element;
+        var laytpl = layui.laytpl;
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#clubPeopleTable',
+            url: 'people/pageMy',
+            page: true,
+            toolbar: ['<p>',
+                // '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                // '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'clubName', title: '社团名称', sort: true},
+                {field: 'actName', title: '活动名称', sort: true},
+                {field: 'actIcon', title: '活动icon', templet: function (d) {
+                        var url = d.actIcon || '../../../assets/images/head.jpg';
+                        return '<img data-index="' + (d.LAY_INDEX - 1) + '" src="' + url + '" class="tb-img-circle" tb-img alt=""/>';
+                    }, align: 'center', sort: true},
+                {field: 'actType', title: '活动类型', templet: function (d) {
+                    if (d.actType == 0)
+                        return '<span class="layui-badge layui-badge-green">会议</span>';
+                    if (d.actType == 1)
+                        return '<span class="layui-badge layui-badge-blue">活动</span>';
+                    }, align: 'center', sort: true},
+                {align: 'center', title: '社团人员', toolbar: '#eClubPeopleLook', minWidth: 140, width: 140},
+
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true
+                },
+                {title: '操作', toolbar: '#clubPeopleTbBar', align: 'center', width: 200, minWidth: 200}
+            ]]
+        });
+
+        /* 渲染表格1 */
+        var insTb1 = tableX.render({
+            elem: '#clubPeopleTable1',
+            url: 'people/pageJoin',
+            page: true,
+            toolbar: ['<p>',
+                // '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                // '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'clubId', title: '社团Id', sort: true},
+                {field: 'actName', title: '活动名称', sort: true},
+                {field: 'actIcon', title: '活动icon', templet: function (d) {
+                        var url = d.actIcon || '../../../assets/images/head.jpg';
+                        return '<img data-index="' + (d.LAY_INDEX - 1) + '" src="' + url + '" class="tb-img-circle" tb-img alt=""/>';
+                    }, align: 'center', sort: true},
+                {field: 'actType', title: '活动类型', templet: function (d) {
+                        if (d.actType == 0)
+                            return '<span class="layui-badge layui-badge-green">会议</span>';
+                        if (d.actType == 1)
+                            return '<span class="layui-badge layui-badge-blue">活动</span>';
+                    }, align: 'center', sort: true},
+                {align: 'center', title: '社团人员', toolbar: '#eClubPeopleLook', minWidth: 140, width: 140},
+
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true
+                },
+                {title: '操作', toolbar: '#clubPeopleTbBar', align: 'center', width: 200, minWidth: 200}
+            ]]
+        });
+
+
+        function showDetailModel(data) {
+            laytpl(eDialogInfoDialog.innerHTML).render(data, function (html) {
+                admin.open({
+                    type: 1,
+                    title: '查看详情',
+                    area: '550px',
+                    content: html,
+                    success: function () {
+                    }
+                });
+            });
+        }
+
+        /* 表1点击图片放大 */
+        $(document).off('click.tbImg').on('click.tbImg', '[tb-img]', function () {
+            var imgList = table.cache['clubPeopleTable'].map(function (d) {
+                return {
+                    alt: d.actName,
+                    src: d.actIcon || '../../../assets/images/head.jpg'
+                }
+            });
+            layer.photos({photos: {data: imgList, start: $(this).data('index')}, shade: .1, closeBtn: true});
+        });
+
+        /* 表2点击图片放大 */
+        $(document).off('click.tbImg1').on('click.tbImg1', '[tb-img1]', function () {
+            var imgList = table.cache['clubPeopleTable1'].map(function (d) {
+                return {
+                    alt: d.actName,
+                    src: d.actIcon || '../../../assets/images/head.jpg'
+                }
+            });
+            layer.photos({photos: {data: imgList, start: $(this).data('index')}, shade: .1, closeBtn: true});
+        });
+
+
+        /* 表格工具条点击事件 */
+        table.on('tool(clubPeopleTable)', function (obj) {
+            if ('detail' === obj.event) { // 修改
+                showDetailModel(obj.data);
+            }
+            if ('activity' === obj.event) { // 修改
+                console.log("开始activity啦");
+                showActivity(obj.data)
+            }  else if ('look' === obj.event) { // 查看人员
+                // 调整位置
+                var $a = $(obj.tr).find('a[lay-event="look"]');
+                var offset = $a.offset();
+                var top = offset.top;
+                var left = offset.left;
+                // 打开弹窗
+                layer.open({
+                    type: 1,
+                    title: false,
+                    area: '700px',
+                    offset: [top + 'px', (left - 530 + $a.outerWidth()) + 'px'],
+                    shade: .01,
+                    shadeClose: true,
+                    fixed: false,
+                    content: '<table id="lookSSXMTable" lay-filter="lookSSXMTable"></table>',
+                    success: function (layero) {
+                        var insTb2 = table.render({
+                            elem: '#lookSSXMTable',
+                            url: 'people/pagePeople?actId=' + obj.data.actId,
+                            toolbar: ['<p>','</p>'].join(''),
+                            page: true,
+                            cellMinWidth: 100,
+                            cols: [[
+                                {type: 'numbers'},
+                                {field: 'trueName', title: '姓名', sort: true},
+                                {field: 'studentClass', title: '班级', sort: true},
+                                {field: 'studentNumber', title: '学号', sort: true},
+                                {field: 'clubPosition', title: '职位', templet: function (d) {
+                                        if (d.clubPosition == 0)
+                                            return '<span class="layui-badge layui-badge-red">发起人</span>';
+                                        if (d.clubPosition == 1)
+                                            return '<span class="layui-badge layui-badge-blue">参与者</span>';
+                                    }, align: 'center', sort: true},
+                                {
+                                    field: 'createTime', title: '加入时间', sort: true, templet: function (d) {
+                                        return util.toDateString(d.createTime);
+                                    }
+                                },
+                                {title: '操作', toolbar: '#clubPeopleTbBar1', align: 'center', width: 150, minWidth: 150}
+
+                            ]],
+                            done: function () {
+                                $(layero).find('.layui-table-view').css('margin', '0');
+                            },
+                            size: ''
+                        });
+
+                        table.on('tool(lookSSXMTable)', function (obj) {
+                            if ('delClubPeople' == obj.event) {
+                                console.log(obj.data);
+                                layer.confirm('确定要剔除吗？', {
+                                    shade: .1,
+                                    skin: 'layui-layer-admin'
+                                }, function (i) {
+                                    if (obj.data.clubPosition == 0) {
+                                        layer.msg("发起人不能删除！", {icon: 2});
+                                        return false;
+                                    }
+                                    layer.close(i);
+                                    layer.load(2);
+                                    $.post('people/remove', {
+                                        id: obj.data.actPeopleId,
+                                    }, function (res) {
+                                        layer.closeAll('loading');
+                                        if (res.code == 0) {
+                                            layer.msg(res.msg, {icon: 1});
+                                            insTb2.reload({page: {curr: 1}});
+                                        } else {
+                                            layer.msg(res.msg, {icon: 2});
+                                        }
+                                    }, 'json');
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        /* 表格1工具条点击事件 */
+        table.on('tool(clubPeopleTable1)', function (obj) {
+            if ('detail' === obj.event) { // 修改
+                showDetailModel(obj.data);
+            } else if ('look' === obj.event) { // 查看人员
+                // 调整位置
+                var $a = $(obj.tr).find('a[lay-event="look"]');
+                var offset = $a.offset();
+                var top = offset.top;
+                var left = offset.left;
+                // 打开弹窗
+                layer.open({
+                    type: 1,
+                    title: false,
+                    area: '700px',
+                    offset: [top + 'px', (left - 530 + $a.outerWidth()) + 'px'],
+                    shade: .01,
+                    shadeClose: true,
+                    fixed: false,
+                    content: '<table id="lookSSXMTable" lay-filter="lookSSXMTable"></table>',
+                    success: function (layero) {
+                        var insTb2 = table.render({
+                            elem: '#lookSSXMTable',
+                            url: 'clubPeople/pageClubPeople?clubId=' + obj.data.clubId,
+                            page: true,
+                            cellMinWidth: 100,
+                            cols: [[
+                                {type: 'numbers'},
+                                {field: 'trueName', title: '姓名', sort: true},
+                                {field: 'studentClass', title: '班级', sort: true},
+                                {field: 'studentNumber', title: '学号', sort: true},
+                                {field: 'clubPosition', title: '职位', templet: function (d) {
+                                        if (d.clubPosition == 1)
+                                            return '<span class="layui-badge layui-badge-red">社长</span>';
+                                        if (d.clubPosition == 0)
+                                            return '<span class="layui-badge layui-badge-blue">社员</span>';
+                                    }, align: 'center', sort: true},
+                                {
+                                    field: 'createTime', title: '加入时间', sort: true, templet: function (d) {
+                                        return util.toDateString(d.createTime);
+                                    }
+                                },
+                            ]],
+                            done: function () {
+                                $(layero).find('.layui-table-view').css('margin', '0');
+                            },
+                            size: ''
+                        });
+                    }
+                });
+            }
+        });
+
+            // 切换Tab重置表格尺寸
+        element.on('tab(tableXTab)', function (data) {
+            var tableIds = ['clubPeopleTable', 'clubPeopleTable1'];
+            table.resize(tableIds[data.index]);
+        });
+
+    });
+</script>
+</body>
+</html>

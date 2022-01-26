@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="管理"/>
+    <style>
+        #eDialogCouEditForm {
+            max-width: 700px;
+            margin: 30px auto;
+        }
+
+        #eDialogCouEditForm .layui-form-item {
+            margin-bottom: 25px;
+        }
+
+        .user-info-head {
+            width: 110px;
+            height: 110px;
+            line-height: 110px;
+            position: relative;
+            display: inline-block;
+            border: 2px solid #eee;
+            overflow: hidden;
+            text-align: center;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+
+        .user-info-head:hover:after {
+            content: '\e681';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.3);
+            font-size: 28px;
+            padding-top: 2px;
+            font-style: normal;
+            font-family: layui-icon;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 日期组件不显示秒 */
+        .laydate-time-list li:last-child {
+            display: none;
+        }
+
+        .laydate-time-list li {
+            width: 50% !important;
+        }
+
+        .laydate-time-list ol li {
+            padding-left: 55px !important;
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief" lay-filter="tableXTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">创建的社团</li>
+                <li>参加的社团</li>
+            </ul>
+            <div class="layui-tab-content">
+                <!-- 社团运营表格 -->
+                <div class="layui-tab-item layui-show">
+                    <!-- 数据表格 -->
+                    <table id="clubPeopleTable" lay-filter="clubPeopleTable"></table>
+                </div>
+                <div class="layui-tab-item">
+                    <table id="clubPeopleTable1" lay-filter="clubPeopleTable1"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="clubPeopleTbBar">
+    <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="activity"><i class="layui-icon">&#xe64c;</i>活动</a>
+</script>
+
+<!-- 列表操作 -->
+<script type="text/html" id="clubPeopleTbBar1">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delClubPeople">删除</a>
+</script>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="eClubPeopleLook">
+    <span class="layui-text">
+        <a href="javascript:;" lay-event="look">
+            <i class="layui-icon" style="font-size: 12px;">&#xe61a;</i> 查看社团成员
+        </a>
+    </span>
+</script>
+
+<!-- 查看活动弹窗 -->
+<script type="text/html" id="eDialogCommentDialog">
+    <table id="eDialogCommentTable" lay-filter="eDialogCommentTable" class="layui-hide"></table>
+    <div class="btn-circle" id="eDialogCommentBtnAdd" style="position: absolute; bottom: 60px;" title="社团活动">
+        <i class="layui-icon layui-icon-edit"></i>
+    </div>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="eDialogCouEditDialog">
+    <form id="eDialogCouEditForm" lay-filter="eDialogCouEditForm" class="layui-form model-form">
+        <input name="clubId" type="hidden"/>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">申请社团:</label>
+            <div class="layui-input-block">
+                <input name="clubName" placeholder="请输入" class="layui-input"
+                       lay-verify="required" disabled/>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">活动名称:</label>
+            <div class="layui-input-block">
+                <input name="actName" placeholder="请输入" class="layui-input"
+                       lay-verify="required" required/>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">日期:</label>
+            <div class="layui-input-block">
+                <input id="EDdateRange" name="startTime" placeholder="请选择起止日期" autocomplete="off"
+                       class="layui-input date-icon" lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">时间:</label>
+            <div class="layui-input-block">
+                <input id="EDtimeRange" name="endTime" placeholder="请选择时间段" autocomplete="off"
+                       class="layui-input date-icon" lay-verType="tips" />
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">活动类型:</label>
+            <div class="layui-input-block">
+                <select name="actType" lay-verType="tips" lay-verify="required" required>
+                    <option value="">请选择活动类型</option>
+                    <option value="0">会议</option>
+                    <option value="1">活动</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">最大人数:</label>
+            <div class="layui-input-block">
+                <input name="maxPeopleNumber" placeholder="请输入" class="layui-input"
+                       lay-verify="required" value="100" disabled/>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">活动icon:</label>
+            <div class="layui-input-block">
+                <div class="user-info-head" id="actIconId">
+                    <img src="${ctxPath}/assets/images/head.jpg" name="actIcon" alt="" style="width: 110px; height:110px"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">活动介绍:</label>
+            <div class="layui-input-block">
+                <textarea name="actIntroduce" placeholder="请输入社团活动内容介绍" class="layui-textarea"
+                          lay-verType="tips" lay-verify="required" required></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="eDialogCouEditSubmit" lay-submit>提交</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'admin', 'dropdown', 'element', 'laydate', 'upload'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var admin = layui.admin;
+        var element = layui.element;
+        var laydate = layui.laydate;
+        var upload = layui.upload;
+        var actIcon = "";
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#clubPeopleTable',
+            url: 'clubPeople/pageMy',
+            page: true,
+            toolbar: ['<p>',
+                // '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                // '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'clubId', title: '社团id', sort: true},
+                {field: 'clubName', title: '社团名称', sort: true},
+                {field: 'clubStatus', title: '社团状态', templet: function (d) {
+                    if (d.clubStatus == 1)
+                        return '<span class="layui-badge layui-badge-green">正常运营</span>';
+                    if (d.clubStatus == 3)
+                        return '<span class="layui-badge layui-badge-gray">已被封禁</span>';
+                    }, align: 'center', sort: true},
+                {align: 'center', title: '社团人员', toolbar: '#eClubPeopleLook', minWidth: 140, width: 140},
+
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true
+                },
+                {title: '操作', toolbar: '#clubPeopleTbBar', align: 'center', width: 200, minWidth: 200}
+            ]]
+        });
+
+        /* 渲染表格1 */
+        var insTb1 = tableX.render({
+            elem: '#clubPeopleTable1',
+            url: 'clubPeople/page',
+            page: true,
+            toolbar: ['<p>',
+                // '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                // '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'clubId', title: '社团id', sort: true},
+                {field: 'clubName', title: '社团名称', sort: true},
+                {field: 'clubStatus', title: '社团状态', templet: function (d) {
+                        if (d.clubStatus == 1)
+                            return '<span class="layui-badge layui-badge-green">正常运营</span>';
+                        if (d.clubStatus == 3)
+                            return '<span class="layui-badge layui-badge-gray">已被封禁</span>';
+                    }, align: 'center', sort: true},
+                {align: 'center', title: '社团人员', toolbar: '#eClubPeopleLook', minWidth: 140, width: 140},
+
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true
+                },
+                // {title: '操作', toolbar: '#clubPeopleTbBar', align: 'center', width: 200, minWidth: 200}
+            ]]
+        });
+
+
+        /* 表格工具条点击事件 */
+        table.on('tool(clubPeopleTable)', function (obj) {
+            if ('activity' === obj.event) { // 修改
+                console.log("开始activity啦");
+                showActivity(obj.data)
+            }  else if ('look' === obj.event) { // 查看人员
+                // 调整位置
+                var $a = $(obj.tr).find('a[lay-event="look"]');
+                var offset = $a.offset();
+                var top = offset.top;
+                var left = offset.left;
+                // 打开弹窗
+                layer.open({
+                    type: 1,
+                    title: false,
+                    area: '700px',
+                    offset: [top + 'px', (left - 530 + $a.outerWidth()) + 'px'],
+                    shade: .01,
+                    shadeClose: true,
+                    fixed: false,
+                    content: '<table id="lookSSXMTable" lay-filter="lookSSXMTable"></table>',
+                    success: function (layero) {
+                        var insTb2 = table.render({
+                            elem: '#lookSSXMTable',
+                            url: 'clubPeople/pageClubPeople?clubId=' + obj.data.clubId,
+                            toolbar: ['<p>','</p>'].join(''),
+                            page: true,
+                            cellMinWidth: 100,
+                            cols: [[
+                                {type: 'numbers'},
+                                {field: 'trueName', title: '姓名', sort: true},
+                                {field: 'studentClass', title: '班级', sort: true},
+                                {field: 'studentNumber', title: '学号', sort: true},
+                                {field: 'clubPosition', title: '职位', templet: function (d) {
+                                        if (d.clubPosition == 1)
+                                            return '<span class="layui-badge layui-badge-red">社长</span>';
+                                        if (d.clubPosition == 0)
+                                            return '<span class="layui-badge layui-badge-blue">社员</span>';
+                                    }, align: 'center', sort: true},
+                                {
+                                    field: 'createTime', title: '加入时间', sort: true, templet: function (d) {
+                                        return util.toDateString(d.createTime);
+                                    }
+                                },
+                                {title: '操作', toolbar: '#clubPeopleTbBar1', align: 'center', width: 150, minWidth: 150}
+
+                            ]],
+                            done: function () {
+                                $(layero).find('.layui-table-view').css('margin', '0');
+                            },
+                            size: ''
+                        });
+
+                        table.on('tool(lookSSXMTable)', function (obj) {
+                            if ('delClubPeople' == obj.event) {
+                                console.log(obj.data);
+                                layer.confirm('确定要剔除吗？', {
+                                    shade: .1,
+                                    skin: 'layui-layer-admin'
+                                }, function (i) {
+                                    if (obj.data.clubPosition == 1) {
+                                        layer.msg("社长不能删除！", {icon: 2});
+                                        return false;
+                                    }
+                                    layer.close(i);
+                                    layer.load(2);
+                                    $.post('clubPeople/remove', {
+                                        id: obj.data.clubPeopleid,
+                                        userId: obj.data.userId
+                                    }, function (res) {
+                                        layer.closeAll('loading');
+                                        if (res.code == 0) {
+                                            layer.msg(res.msg, {icon: 1});
+                                            insTb2.reload({page: {curr: 1}});
+                                        } else {
+                                            layer.msg(res.msg, {icon: 2});
+                                        }
+                                    }, 'json');
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        /* 表格1工具条点击事件 */
+        table.on('tool(clubPeopleTable1)', function (obj) {
+            if ('edit' === obj.event) { // 修改
+                showEditModel(obj.data);
+            } else if ('del' === obj.event) { // 删除
+                doDel(obj);
+            } else if ('look' === obj.event) { // 查看人员
+                // 调整位置
+                var $a = $(obj.tr).find('a[lay-event="look"]');
+                var offset = $a.offset();
+                var top = offset.top;
+                var left = offset.left;
+                // 打开弹窗
+                layer.open({
+                    type: 1,
+                    title: false,
+                    area: '700px',
+                    offset: [top + 'px', (left - 530 + $a.outerWidth()) + 'px'],
+                    shade: .01,
+                    shadeClose: true,
+                    fixed: false,
+                    content: '<table id="lookSSXMTable" lay-filter="lookSSXMTable"></table>',
+                    success: function (layero) {
+                        var insTb2 = table.render({
+                            elem: '#lookSSXMTable',
+                            url: 'clubPeople/pageClubPeople?clubId=' + obj.data.clubId,
+                            page: true,
+                            cellMinWidth: 100,
+                            cols: [[
+                                {type: 'numbers'},
+                                {field: 'trueName', title: '姓名', sort: true},
+                                {field: 'studentClass', title: '班级', sort: true},
+                                {field: 'studentNumber', title: '学号', sort: true},
+                                {field: 'clubPosition', title: '职位', templet: function (d) {
+                                        if (d.clubPosition == 1)
+                                            return '<span class="layui-badge layui-badge-red">社长</span>';
+                                        if (d.clubPosition == 0)
+                                            return '<span class="layui-badge layui-badge-blue">社员</span>';
+                                    }, align: 'center', sort: true},
+                                {
+                                    field: 'createTime', title: '加入时间', sort: true, templet: function (d) {
+                                        return util.toDateString(d.createTime);
+                                    }
+                                },
+                            ]],
+                            done: function () {
+                                $(layero).find('.layui-table-view').css('margin', '0');
+                            },
+                            size: ''
+                        });
+                    }
+                });
+            }
+        });
+
+        // 活动页面
+        function showActivity(data) {
+            id = data.clubId;
+            admin.open({
+                type: 1,
+                area: '1000px',
+                offset: '65px',
+                title: '查看活动',
+                content: $('#eDialogCommentDialog').html(),
+                success: function (layero) {
+                    // 渲染表格
+                    var insTbCom = table.render({
+                        elem: '#eDialogCommentTable',
+                        url: 'schoolActivity/pageMy?clubId=' + id,
+                        page: true,
+                        height: 400,
+                        cellMinWidth: 100,
+                        cols: [[
+                            {type: 'numbers', title: '#'},
+                            {field: 'actId', sort: true, title: '活动id', width: 100},
+                            {field: 'actName', sort: true, title: '活动名称'},
+                            {field: 'actType', sort: true, title: '活动类型', templet: function (d) {
+                                    return [
+                                        '<span class="layui-badge layui-badge-green">会议</span>',
+                                        '<span class="layui-badge layui-badge-blue">活动</span>'
+                                    ][d.actType];
+                                }, align: 'center'},
+                            {field: 'maxPeopleNumber', sort: true, title: '最大人数'},
+                            // {field: 'nowPeopleNumber', sort: true, title: '参与人数'},
+                            {field: 'startTime', sort: true, title: '日期'},
+                            {field: 'endTime', sort: true, title: '时间'},
+                            {field: 'actIntroduce', sort: true, title: '介绍'},
+
+                            {
+                                title: '评论时间', sort: true, templet: function (d) {
+                                    return util.toDateString(d.createTime);
+                                }
+                            },
+                            {align: 'center', toolbar: '#eDialogCommentTbBar', title: '操作', minWidth: 80, width: 80}
+                        ]],
+                        done: function () {
+                            $(layero).find('.layui-table-view').css('margin', '0');
+                        }
+                    });
+
+                    // 查看评论工具条点击事件
+                    // table.on('tool(eDialogCommentTable)', function (obj) {
+                    //     var data = obj.data;
+                    //     var layEvent = obj.event;
+                    //     if (layEvent === 'del') { // 删除
+                    //         layer.msg('删除成功', {icon: 1});
+                    //     }
+                    // });
+
+                    // 发表评论
+                    $('#eDialogCommentBtnAdd').click(function () {
+                        layer.open({
+                            type: 1,
+                            title: '申请活动',
+                            shadeClose: true,
+                            shade: 0.4,
+                            area: ['100%', '100%'],
+                            maxmin: true,
+                            resize: true,
+                            content: $('#eDialogCouEditDialog').html(),
+                            success: function (layero, dIndex) {
+                                // mData = "";
+                                form.val('eDialogCouEditForm', data);
+
+                                // form.render('select');
+                                // 表单提交事件
+                                form.on('submit(eDialogCouEditSubmit)', function (data) {
+                                    console.log(data.field);
+                                    var loadIndex = layer.load(2);
+                                    delete data.field.image;
+                                    data.field.actIcon = actIcon;
+                                    $.post('schoolActivity/auditAct', data.field, function (res) {
+                                        layer.close(loadIndex);
+                                        if (0 === res.code) {
+                                            layer.close(loadIndex);
+                                            layer.close(dIndex);
+                                            layer.msg(res.msg, {icon: 1});
+                                            // insTb.reload({page: {curr: 1}});
+                                        } else {
+                                            layer.msg(res.msg, {icon: 2, anim: 6});
+                                        }
+                                    });
+                                    return false;
+                                });
+                                // 日期范围
+                                laydate.render({
+                                    elem: '#EDdateRange',
+                                    range: true,
+                                    trigger: 'click'
+                                });
+                                // 时间范围
+                                laydate.render({
+                                    elem: '#EDtimeRange',
+                                    type: 'time',
+                                    format: 'HH:mm',
+                                    range: true,
+                                    trigger: 'click'
+                                });
+
+                                /* 图标选择 上传到遇见图床 同时获取url */
+                                upload.render({
+                                    elem: '#actIconId',
+                                    field: 'image',
+                                    url: 'https://www.hualigs.cn/api/upload',
+                                    data: {apiType:'ali', token:'f282907b5032f66445b68a085bece97b'},
+                                    accept: 'image',
+                                    before: function (obj) {
+                                        layer.load(2);
+                                    },
+                                    done: function (res) {
+                                        layer.closeAll('loading');
+                                        if (200 === res.code) {
+                                            // 设置img图标显示图片
+                                            $('#actIconId>img').attr('src', res.data.url.distribute);
+                                            layer.msg('上传成功', {icon: 1});
+                                            // 将图片url存入，待submit之后一起上传
+                                            actIcon = res.data.url.distribute;
+                                            // console.log(clubIcon);
+                                        } else {
+                                            layer.msg(res.msg, {icon: 2, anim: 6});
+                                        }
+                                    },
+                                    error: function () {
+                                        layer.msg('上传失败', {icon: 2, anim: 6});
+                                        layer.closeAll('loading');
+                                    }
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+            // 切换Tab重置表格尺寸
+        element.on('tab(tableXTab)', function (data) {
+            var tableIds = ['clubPeopleTable', 'clubPeopleTable1'];
+            table.resize(tableIds[data.index]);
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../../common/css.html" title="社团大厅"/>
+    <style>
+        #clubTable + .layui-table-view .layui-table-body tbody > tr > td {
+            padding: 0;
+        }
+
+        #clubTable + .layui-table-view .layui-table-body tbody > tr > td > .layui-table-cell {
+            height: 48px;
+            line-height: 48px;
+        }
+
+        #clubTable1 + .layui-table-view .layui-table-body tbody > tr > td {
+            padding: 0;
+        }
+
+        #clubTable1 + .layui-table-view .layui-table-body tbody > tr > td > .layui-table-cell {
+            height: 48px;
+            line-height: 48px;
+        }
+
+        .tb-img-circle {
+            width: 40px;
+            height: 40px;
+            cursor: zoom-in;
+            border-radius: 50%;
+            border: 2px solid #dddddd;
+        }
+
+        /** 查看详情弹窗样式 */
+        .paper-info-group {
+            padding: 15px 25px;
+        }
+
+        .paper-info-group h3 {
+            font-weight: bold;
+            color: #000000;
+            padding-bottom: 8px;
+        }
+
+        .paper-info-group p {
+            color: #666;
+            padding-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .paper-info-group .paper-info-group-imgs {
+            padding-top: 5px;
+        }
+
+        .paper-info-group .paper-info-group-imgs img {
+            margin-right: 15px;
+            margin-bottom: 15px;
+            cursor: zoom-in;
+        }
+
+        .paper-info-group .paper-info-group-imgs img:last-child {
+            margin-right: 0;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief" lay-filter="tableXTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">社团运营</li>
+                <li>社团审核</li>
+            </ul>
+            <div class="layui-tab-content">
+                <!-- 社团运营表格 -->
+                <div class="layui-tab-item layui-show">
+                    <!-- 表格工具栏 -->
+                    <form class="layui-form toolbar">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input name="clubName" class="layui-input" placeholder="社团名称"/>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input name="leaderId" class="layui-input" placeholder="创建人id"/>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">&emsp;
+                                <button class="layui-btn icon-btn" lay-filter="clubTbSearch" lay-submit>
+                                    <i class="layui-icon">&#xe615;</i>搜索
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- 数据表格 -->
+                    <table id="clubTable" lay-filter="clubTable"></table>
+                </div>
+
+                <!-- 社团审批表格 -->
+                <div class="layui-tab-item">
+                    <!-- 表格工具栏 -->
+                    <form class="layui-form toolbar">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input name="clubName" class="layui-input" placeholder="社团名称"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input name="leaderId" class="layui-input" placeholder="创建人id"/>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">&emsp;
+                                <button class="layui-btn icon-btn" lay-filter="clubTbSearch" lay-submit>
+                                    <i class="layui-icon">&#xe615;</i>搜索
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- 数据表格 -->
+                    <table id="clubTable1" lay-filter="clubTable1"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 表格1操作列 -->
+<script type="text/html" id="clubTbBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">详情</a>
+</script>
+
+<!-- 表格2操作列 -->
+<script type="text/html" id="clubTbBar1">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">详情</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs"
+       data-dropdown="#clubTbDelDrop{{d.LAY_INDEX}}" no-shade="true">审核通过</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs"
+       lay-event="changeStatusBack"  no-shade="true">审核驳回</a>
+
+    <div class="dropdown-menu-nav dropdown-popconfirm dropdown-top-right layui-hide"
+         id="clubTbDelDrop{{d.LAY_INDEX}}"
+         style="max-width: 200px;white-space: normal;min-width: auto;margin-left: 10px;">
+        <div class="dropdown-anchor"></div>
+        <div class="dropdown-popconfirm-title">
+            <i class="layui-icon layui-icon-help"></i>
+            确定要审核通过吗？
+        </div>
+        <div class="dropdown-popconfirm-btn">
+            <a class="layui-btn" btn-cancel>取消</a>
+            <a class="layui-btn layui-btn-normal" lay-event="changeStatusPass">确定</a>
+        </div>
+    </div>
+</script>
+
+<!-- 表格状态列 -->
+<script type="text/html" id="clubTbState">
+    <input type="checkbox" lay-filter="clubTbStateCk" value="{{d.clubId}}" lay-skin="switch"
+           lay-text="正常|封禁" {{d.status==1?'checked':''}} style="display: none;"/>
+    <p style="display: none;">{{d.state==1?'正常':'封禁'}}</p>
+</script>
+
+<!-- 查看详情弹窗 -->
+<script type="text/html" id="eDialogInfoDialog">
+    <div class="paper-info-group">
+        <h3>社长</h3>
+        <p>{{d.trueName}}</p>
+        <h3>学号</h3>
+        <p>{{d.leaderId}}</p>
+        <h3>社团介绍</h3>
+        <p>{{d.clubIntroduce}}</p>
+    </div>
+</script>
+<:include file="../../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'admin', 'dropdown', 'upload', 'laytpl', 'element'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var element = layui.element;
+        var laytpl = layui.laytpl;
+        var upload = layui.upload;
+        var admin = layui.admin;
+        var clubIcon = "";
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#clubTable',
+            url: 'admin/pageRun',
+            page: true,
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'clubId', title: '社团id', sort: true, width:100},
+                {field: 'clubName', title: '社团名称', sort: true, width: 250},
+                {field: 'clubIcon', title: '社团icon', templet: function (d) {
+                        var url = d.clubIcon || '../../../assets/images/head.jpg';
+                        return '<img data-index="' + (d.LAY_INDEX - 1) + '" src="' + url + '" class="tb-img-circle" tb-img alt=""/>';
+                    }, align: 'center', sort: true},
+                {field: 'clubType', title: '社团类型', templet: function (d) {
+                        return [
+                            '<span class="layui-badge layui-badge">专业相关</span>',
+                            '<span class="layui-badge layui-badge-blue">赛事相关</span>',
+                            '<span class="layui-badge layui-badge-green">体育相关</span>',
+                            '<span class="layui-badge layui-badge-orange">文艺相关</span>'
+                        ][d.clubType];
+                    }, align: 'center',sort: true},
+                {field: 'nowPeopleNumber', title: '成员人数', sort: true},
+                {field: 'status', title: '状态', templet: '#clubTbState', sort: true},
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true, width:120
+                },
+                {title: '操作', toolbar: '#clubTbBar', align: 'center', width: 200, minWidth: 200}
+            ]]
+        });
+
+        /* 渲染表格1 */
+        var insTb1 = tableX.render({
+            elem: '#clubTable1',
+            url: 'admin/pageAudit',
+            page: true,
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'clubId', title: '社团id', sort: true, width:100},
+                {field: 'clubName', title: '社团名称', sort: true, width: 250},
+                {field: 'clubIcon', title: '社团icon', templet: function (d) {
+                        var url = d.clubIcon || '../../../assets/images/head.jpg';
+                        return '<img data-index="' + (d.LAY_INDEX - 1) + '" src="' + url + '" class="tb-img-circle" tb-img1 alt=""/>';
+                    }, align: 'center', sort: true},
+                {field: 'clubType', title: '社团类型', templet: function (d) {
+                        return [
+                            '<span class="layui-badge layui-badge">专业相关</span>',
+                            '<span class="layui-badge layui-badge-blue">赛事相关</span>',
+                            '<span class="layui-badge layui-badge-green">体育相关</span>',
+                            '<span class="layui-badge layui-badge-orange">文艺相关</span>'
+                        ][d.clubType];
+                    }, align: 'center',sort: true},
+                {field: 'nowPeopleNumber', title: '成员人数', sort: true},
+                {field: 'status', title: '状态', templet: function (d) {
+                        return [
+                            '<span class="layui-badge layui-badge-red">未审核</span>',
+                        ][d.status];
+                    }, align: 'center',  sort: true},
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true, width:120
+                },
+                {title: '操作', toolbar: '#clubTbBar1', align: 'center', width: 300, minWidth: 200}
+            ]]
+        });
+
+        /* 表格搜索 */
+        form.on('submit(clubTbSearch)', function (data) {
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(clubTable)', function (obj) {
+            if ('detail' === obj.event) { // 修改
+                showDetailModel(obj.data);
+            }
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(clubTable1)', function (obj) {
+            if ('detail' === obj.event) { // 修改
+                showDetailModel(obj.data);
+            } else if ('changeStatusPass' === obj.event) {
+                changeStatusPass(obj.data);
+            } else if ('changeStatusBack' === obj.event) {
+                changeStatusBack(obj.data);
+            }
+        });
+
+        /* 表1点击图片放大 */
+        $(document).off('click.tbImg').on('click.tbImg', '[tb-img]', function () {
+            var imgList = table.cache['clubTable'].map(function (d) {
+                return {
+                    alt: d.clubName,
+                    src: d.clubIcon || '../../../assets/images/head.jpg'
+                }
+            });
+            layer.photos({photos: {data: imgList, start: $(this).data('index')}, shade: .1, closeBtn: true});
+        });
+
+        /* 表2点击图片放大 */
+        $(document).off('click.tbImg1').on('click.tbImg1', '[tb-img1]', function () {
+            var imgList = table.cache['clubTable1'].map(function (d) {
+                return {
+                    alt: d.clubName,
+                    src: d.clubIcon || '../../../assets/images/head.jpg'
+                }
+            });
+            layer.photos({photos: {data: imgList, start: $(this).data('index')}, shade: .1, closeBtn: true});
+        });
+
+        /* 修改社团状态 */
+        form.on('switch(clubTbStateCk)', function (obj) {
+            var loadIndex = layer.load(2);
+            $.post('admin/statusBlock', {
+                id: obj.elem.value,
+                status: obj.elem.checked ? 1 : 3
+            }, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1});
+                } else {
+                    layer.msg(res.msg, {icon: 2, anim: 6});
+                    $(obj.elem).prop('checked', !obj.elem.checked);
+                    form.render('checkbox', $('#clubTable').next().attr('lay-filter'));
+                }
+            });
+        });
+
+        // 审核通过
+        function changeStatusPass(data) {
+            console.log(data);
+            var loadIndex = layer.load(2);
+            // 删除转换字段
+            delete data.createTime;
+            delete data.updateTime;
+
+            $.post('admin/statusPass', data, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1});
+                    insTb.reload({page: {curr: 1}});
+                    insTb1.reload({page: {curr: 1}});
+                } else {
+                    layer.msg(res.msg, {icon: 2, anim: 6});
+                }
+            });
+        }
+
+        // 审核驳回
+        function changeStatusBack(data) {
+            var loadIndex = layer.load(2);
+            // 删除转换字段
+            delete data.createTime;
+            delete data.updateTime;
+
+            layer.prompt({
+                title: '填写回复',
+                shade: .1,
+                offset: '165px',
+                skin: 'layui-layer-admin layui-layer-prompt',
+                formType: 2
+            }, function (value, index, elem) {
+                // console.log(value);
+                layer.close(index);
+                // layer.msg('评论成功', {icon: 1});
+                data.remark = value;
+                $.post('admin/statusBack', data, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                        insTb1.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            });
+        }
+
+        function showDetailModel(data) {
+            laytpl(eDialogInfoDialog.innerHTML).render(data, function (html) {
+                admin.open({
+                    type: 1,
+                    title: '查看详情',
+                    area: '550px',
+                    content: html,
+                    success: function () {
+                    }
+                });
+            });
+        }
+
+        // 切换Tab重置表格尺寸
+        element.on('tab(tableXTab)', function (data) {
+            var tableIds = ['clubTable', 'clubTable1'];
+            table.resize(tableIds[data.index]);
+        });
+
+    });
+</script>
+</body>
+</html>

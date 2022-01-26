@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.egao.schoolClub.mapper.PeopleMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*
+        FROM activity_people a
+        <where>
+            <if test="page!=null and page.pageData!=null">
+				<if test="page.pageData.actPeopleid != null">
+					AND a.act_peopleId = #{page.pageData.actPeopleid}
+				</if>
+				<if test="page.pageData.actId != null">
+					AND a.act_id = #{page.pageData.actId}
+                </if>
+				<if test="page.pageData.userId != null">
+					AND a.user_id = #{page.pageData.userId}
+                </if>
+				<if test="page.pageData.status != null">
+					AND a.status = #{page.pageData.status}
+                </if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.egao.schoolClub.entity.People">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.egao.schoolClub.entity.People">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="listAllClubIdsByLeaderId" resultType="java.lang.Integer">
+        SELECT a.club_id
+        FROM club a
+        WHERE a.leader_id = #{leaderId}
+        AND a.deleted = 0
+    </select>
+
+
+    <!-- 分页查询 -->
+    <select id="listPageActUser" resultType="com.egao.common.system.entity.User">
+        SELECT a.act_peopleId as actPeopleId,a.status as clubPosition, a.create_time, b.user_id, b.student_class, b.student_number, b.true_name
+        FROM activity_people a
+        LEFT JOIN sys_user b
+        ON a.user_id = b.user_id
+        WHERE
+            a.act_id = #{page.pageData.actId}
+            AND a.deleted = 0
+            AND b.state = 0
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="listPageAct" resultType="com.egao.schoolClub.entity.SchoolActivity">
+        SELECT b.*
+        FROM activity_people a
+        LEFT JOIN school_activity b
+        ON a.act_id = b.act_id
+        WHERE
+            a.user_id = #{page.pageData.userId}
+            AND a.deleted = 0
+            AND a.status = 1
+            AND b.deleted = 0
+    </select>
+
+</mapper>

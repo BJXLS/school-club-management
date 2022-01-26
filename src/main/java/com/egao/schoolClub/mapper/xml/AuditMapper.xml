@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.egao.schoolClub.mapper.AuditMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*
+        FROM audit a
+        <where>
+            <if test="page!=null and page.pageData!=null">
+				<if test="page.pageData.auditId != null">
+					AND a.audit_id = #{page.pageData.auditId}
+				</if>
+				<if test="page.pageData.type != null">
+					AND a.type = #{page.pageData.type}
+                </if>
+				<if test="page.pageData.result != null">
+					AND a.result = #{page.pageData.result}
+                </if>
+				<if test="page.pageData.applicantId != null">
+					AND a.applicant_id = #{page.pageData.applicantId}
+                </if>
+				<if test="page.pageData.auditorId != null">
+					AND a.auditor_id = #{page.pageData.auditorId}
+                </if>
+				<if test="page.pageData.remark != null">
+                    AND a.remark LIKE CONCAT('%', #{page.pageData.remark}, '%')
+				</if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.egao.schoolClub.entity.Audit">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.egao.schoolClub.entity.Audit">
+        <include refid="relSelect"></include>
+    </select>
+
+</mapper>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.egao.schoolClub.mapper.ClubMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*
+        FROM club a
+        <where>
+            <if test="page!=null and page.pageData!=null">
+				<if test="page.pageData.clubId != null">
+					AND a.club_id = #{page.pageData.clubId}
+				</if>
+				<if test="page.pageData.clubName != null">
+                    AND a.club_name LIKE CONCAT('%', #{page.pageData.clubName}, '%')
+				</if>
+				<if test="page.pageData.clubIcon != null">
+                    AND a.club_icon LIKE CONCAT('%', #{page.pageData.clubIcon}, '%')
+				</if>
+				<if test="page.pageData.clubIntroduce != null">
+                    AND a.club_introduce LIKE CONCAT('%', #{page.pageData.clubIntroduce}, '%')
+				</if>
+				<if test="page.pageData.clubType != null">
+					AND a.club_type = #{page.pageData.clubType}
+                </if>
+				<if test="page.pageData.maxPeopleNumber != null">
+					AND a.max_people_number = #{page.pageData.maxPeopleNumber}
+                </if>
+				<if test="page.pageData.leaderId != null">
+					AND a.leader_id = #{page.pageData.leaderId}
+                </if>
+				<if test="page.pageData.nowPeopleNumber != null">
+					AND a.now_people_number = #{page.pageData.nowPeopleNumber}
+                </if>
+				<if test="page.pageData.status != null">
+					AND a.status = #{page.pageData.status}
+                </if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.egao.schoolClub.entity.Club">
+        SELECT a.*, b.true_name, b.user_id as leaderUserId
+        FROM club a, sys_user b
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.clubId != null">
+                    AND a.club_id = #{page.pageData.clubId}
+                </if>
+                <if test="page.pageData.clubName != null">
+                    AND a.club_name LIKE CONCAT('%', #{page.pageData.clubName}, '%')
+                </if>
+                <if test="page.pageData.clubIcon != null">
+                    AND a.club_icon LIKE CONCAT('%', #{page.pageData.clubIcon}, '%')
+                </if>
+                <if test="page.pageData.clubIntroduce != null">
+                    AND a.club_introduce LIKE CONCAT('%', #{page.pageData.clubIntroduce}, '%')
+                </if>
+                <if test="page.pageData.clubType != null">
+                    AND a.club_type = #{page.pageData.clubType}
+                </if>
+                <if test="page.pageData.maxPeopleNumber != null">
+                    AND a.max_people_number = #{page.pageData.maxPeopleNumber}
+                </if>
+                <if test="page.pageData.leaderId != null">
+                    AND a.leader_id = #{page.pageData.leaderId}
+                </if>
+                <if test="page.pageData.nowPeopleNumber != null">
+                    AND a.now_people_number = #{page.pageData.nowPeopleNumber}
+                </if>
+                <if test="page.pageData.status != null">
+                    AND a.status = #{page.pageData.status}
+                </if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                AND a.leader_id = b.student_number
+            </if>
+        </where>
+    </select>
+
+    <select id="listAllUserId" resultType="com.egao.schoolClub.entity.Club">
+        SELECT a.*, b.true_name, b.user_id as leaderUserId
+        FROM club a, sys_user b
+        WHERE a.club_id =  #{clubId}
+        AND a.leader_id = b.student_number
+        AND a.deleted = 0
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.egao.schoolClub.entity.Club">
+        SELECT a.*, b.true_name
+        FROM club a, sys_user b
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.clubId != null">
+                    AND a.club_id = #{page.pageData.clubId}
+                </if>
+                <if test="page.pageData.clubName != null">
+                    AND a.club_name LIKE CONCAT('%', #{page.pageData.clubName}, '%')
+                </if>
+                <if test="page.pageData.clubIcon != null">
+                    AND a.club_icon LIKE CONCAT('%', #{page.pageData.clubIcon}, '%')
+                </if>
+                <if test="page.pageData.clubIntroduce != null">
+                    AND a.club_introduce LIKE CONCAT('%', #{page.pageData.clubIntroduce}, '%')
+                </if>
+                <if test="page.pageData.clubType != null">
+                    AND a.club_type = #{page.pageData.clubType}
+                </if>
+                <if test="page.pageData.maxPeopleNumber != null">
+                    AND a.max_people_number = #{page.pageData.maxPeopleNumber}
+                </if>
+                <if test="page.pageData.leaderId != null">
+                    AND a.leader_id = #{page.pageData.leaderId}
+                </if>
+                <if test="page.pageData.nowPeopleNumber != null">
+                    AND a.now_people_number = #{page.pageData.nowPeopleNumber}
+                </if>
+                <if test="page.pageData.status != null">
+                    AND a.status = #{page.pageData.status}
+                </if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                AND a.leader_id = b.student_number
+            </if>
+        </where>
+    </select>
+
+    <select id="listPageRun" resultType="com.egao.schoolClub.entity.Club">
+        SELECT a.*, b.true_name
+        FROM club a, sys_user b
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.clubId != null">
+                    AND a.club_id = #{page.pageData.clubId}
+                </if>
+                <if test="page.pageData.clubName != null">
+                    AND a.club_name LIKE CONCAT('%', #{page.pageData.clubName}, '%')
+                </if>
+                <if test="page.pageData.clubType != null">
+                    AND a.club_type = #{page.pageData.clubType}
+                </if>
+                <if test="page.pageData.maxPeopleNumber != null">
+                    AND a.max_people_number = #{page.pageData.maxPeopleNumber}
+                </if>
+                <if test="page.pageData.leaderId != null">
+                    AND a.leader_id = #{page.pageData.leaderId}
+                </if>
+                <if test="page.pageData.nowPeopleNumber != null">
+                    AND a.now_people_number = #{page.pageData.nowPeopleNumber}
+                </if>
+                    AND a.status in (1, 3)
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                AND a.leader_id = b.student_number
+            </if>
+        </where>
+    </select>
+
+</mapper>

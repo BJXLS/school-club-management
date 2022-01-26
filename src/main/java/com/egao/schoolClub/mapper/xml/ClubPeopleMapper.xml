@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.egao.schoolClub.mapper.ClubPeopleMapper">
+
+    <!-- 具体的查找映射 -->
+<!--    <resultMap id="BaseResultMap" type="com.egao.schoolClub.entity.ClubPeople" >-->
+<!--        <id column="club_peopleId" property="clubPeopleid" jdbcType="INTEGER" />-->
+<!--        <result column="club_id" property="clubId" jdbcType="INTEGER" />-->
+<!--        <result column="user_id" property="userId" jdbcType="INTEGER" />-->
+<!--        <result column="club_position" property="clubPosition" jdbcType="INTEGER" />-->
+<!--        <result column="status" property="status" jdbcType="INTEGER" />-->
+<!--        <result column="club_Name" property="clubName" jdbcType="VARCHAR" />-->
+<!--        <result column="club_Status" property="clubStatus" jdbcType="INTEGER" />-->
+<!--        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />-->
+<!--        <collection property="users" javaType="java.util.ArrayList" ofType="com.egao.common.system.entity.User">-->
+<!--            <id column="pics_id" property="userId" jdbcType="INTEGER" />-->
+<!--            <result column="pics_big" property="sex" jdbcType="INTEGER" />-->
+<!--            <result column="pics_big" property="email" jdbcType="VARCHAR" />-->
+<!--            <result column="pics_big" property="trueName" jdbcType="VARCHAR" />-->
+<!--            <result column="pics_big" property="studentNumber" jdbcType="VARCHAR" />-->
+<!--            <result column="pics_big" property="studentClass" jdbcType="VARCHAR" />-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*
+        FROM club_people a
+        <where>
+            <if test="page!=null and page.pageData!=null">
+				<if test="page.pageData.clubPeopleid != null">
+					AND a.club_peopleId = #{page.pageData.clubPeopleid}
+				</if>
+				<if test="page.pageData.clubId != null">
+					AND a.club_id = #{page.pageData.clubId}
+                </if>
+				<if test="page.pageData.userId != null">
+					AND a.user_id = #{page.pageData.userId}
+                </if>
+				<if test="page.pageData.clubPosition != null">
+					AND a.club_position = #{page.pageData.clubPosition}
+                </if>
+				<if test="page.pageData.status != null">
+					AND a.status = #{page.pageData.status}
+                </if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.egao.schoolClub.entity.ClubPeople">
+        SELECT a.*, b.club_name, b.status as clubStatus
+        FROM club_people a, club b
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.clubPeopleid != null">
+                    AND a.club_peopleId = #{page.pageData.clubPeopleid}
+                </if>
+                <if test="page.pageData.clubId != null">
+                    AND a.club_id = #{page.pageData.clubId}
+                </if>
+                <if test="page.pageData.userId != null">
+                    AND a.user_id = #{page.pageData.userId}
+                </if>
+                <if test="page.pageData.clubPosition != null">
+                    AND a.club_position = #{page.pageData.clubPosition}
+                </if>
+                <if test="page.pageData.status != null">
+                    AND a.status != 0
+                </if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                AND a.club_id = b.club_id
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.egao.schoolClub.entity.ClubPeople">
+        <include refid="relSelect"></include>
+    </select>
+
+    <select id="selectUserIdsByClubIds" resultType="java.lang.Integer">
+        SELECT a.user_id
+        FROM club_people a
+        WHERE a.club_id IN
+        <foreach collection="clubIds" open="(" close=")" separator="," item="clubId">
+            #{clubId}
+        </foreach>
+        AND a.deleted=0
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="listPageClubPeople" resultType="com.egao.common.system.entity.User">
+        SELECT a.club_position as clubPosition, a.club_peopleId, a.create_time, b.user_id, b.student_class, b.student_number, b.true_name
+        FROM club_people a
+        LEFT JOIN sys_user b
+        ON a.user_id = b.user_id
+        WHERE
+            a.club_id = #{page.pageData.clubId}
+            AND a.deleted = 0
+            AND b.state = 0
+    </select>
+
+</mapper>

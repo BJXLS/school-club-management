@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <:include file="../common/css.html" title="活动大厅"/>
+    <style>
+        /** 项目列表样式 */
+        .project-list-item {
+            background-color: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .project-list-item:hover {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .15);
+        }
+
+        .project-list-item .project-list-item-cover {
+            width: 100%;
+            height: 220px;
+            display: block;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .project-list-item-body {
+            padding: 20px;
+        }
+
+        .project-list-item .project-list-item-body > h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .project-list-item .project-list-item-text {
+            height: 44px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .project-list-item .project-list-item-desc {
+            position: relative;
+        }
+
+        .project-list-item .project-list-item-desc .time {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .project-list-item .project-list-item-desc .ew-head-list {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .ew-head-list .ew-head-list-item {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid #fff;
+            margin-left: -10px;
+        }
+
+        .ew-head-list .ew-head-list-item:first-child {
+            margin-left: 0;
+        }
+
+        /** // 项目列表样式结束 */
+
+        .console-app-group:hover {
+            box-shadow: 0 0 15px rgba(0, 0, 0, .08);
+        }
+
+        /** 查看详情弹窗样式 */
+        .paper-info-group {
+            padding: 15px 25px;
+        }
+
+        .paper-info-group h3 {
+            font-weight: bold;
+            color: #000000;
+            padding-bottom: 8px;
+        }
+
+        .paper-info-group p {
+            color: #666;
+            padding-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .paper-info-group .paper-info-group-imgs {
+            padding-top: 5px;
+        }
+
+        .paper-info-group .paper-info-group-imgs img {
+            margin-right: 15px;
+            margin-bottom: 15px;
+            cursor: zoom-in;
+        }
+
+        .paper-info-group .paper-info-group-imgs img:last-child {
+            margin-right: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+<!--        <div class="layui-tab layui-tab-brief">-->
+<!--            <ul class="layui-tab-title">-->
+<!--                <li class="layui-this">项目</li>-->
+<!--                <li>应用</li>-->
+<!--                <li>文章</li>-->
+<!--            </ul>-->
+<!--            <div class="layui-tab-content">-->
+<!--                <div class="layui-tab-item layui-show" style="padding-top: 20px;">-->
+                    <div class="layui-row layui-col-space30" id="demoCardList1"></div>
+<!--                </div>-->
+<!--                <div class="layui-tab-item" style="padding-top: 20px;">-->
+<!--                    <div class="layui-row layui-col-space30" id="demoCardList2"></div>-->
+<!--                </div>-->
+<!--                <div class="layui-tab-item">-->
+<!--                    <div style="max-width: 730px;padding-left: 10px;">-->
+<!--                        <div id="demoCardList3"></div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+</div>
+
+<!-- 项目模板 -->
+<script type="text/html" id="demoCardItem1">
+    <div class="layui-col-md3">
+        <div class="project-list-item">
+            {{# if (d.actIcon) { }}
+                <img class="project-list-item-cover" src="{{d.actIcon}}"/>
+            {{# } else { }}
+                <img class="project-list-item-cover" src="${ctxPath}/assets/images/head.jpg"/>
+            {{# } }}
+            <div class="project-list-item-body">
+                <h2>{{d.actName}}</h2>
+                <div class="project-list-item-text layui-text">{{d.actIntroduce}}</div>
+                <div class="project-list-item-desc">
+                    <span class="time">{{d.startTime}}</span>
+                    <span class="time">{{d.endTime}}</span>
+                    {{# if (d.actType == 0) { }}
+                        <span class="layui-badge layui-badge-green">会议</span>
+                    {{# } if (d.actType == 1) { }}
+                        <span class="layui-badge layui-badge-blue">活动</span>
+                    {{# } }}
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<!-- 查看详情弹窗 -->
+<script type="text/html" id="eDialogInfoDialog">
+    <div class="paper-info-group">
+        <h3>社团id</h3>
+        <p>{{d.clubId}}</p>
+        <h3>社团名称</h3>
+        <p>{{d.clubName}}</p>
+        <h3>日期</h3>
+        <p>{{d.startTime}}</p>
+        <h3>时间</h3>
+        <p>{{d.endTime}}</p>
+        <h3>活动介绍</h3>
+        <p style="word-wrap: break-word; word-break: normal;">{{d.actIntroduce}}</p>
+        <button id="signUp" class="layui-btn layui-btn-normal icon-btn" actId="{{d.actId}}" actName="{{d.actName}}" leaderId="{{d.leaderId}}"><i class="layui-icon">&#xe63c;</i>报名</button>
+    </div>
+</script>
+
+
+<!-- js部分 -->
+<:include file="../common/js.html"/>
+
+<script>
+    layui.use(['layer', 'dataGrid', 'element', 'dropdown', 'laytpl', 'admin'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var dataGrid = layui.dataGrid;
+        var laytpl = layui.laytpl;
+        var admin = layui.admin;
+
+
+        // $('#signUp').click(function () {
+        //     // console.log(obj.data);
+        //     // var loadIndex = layer.load(2);
+        //     // // 删除转换字段
+        //     // delete obj.data.createTime;
+        //     // delete obj.data.updateTime;
+        //     // $.post('schoolActivity/signUpAct', obj.data, function (res) {
+        //     //     layer.close(loadIndex);
+        //     //     if (0 === res.code) {
+        //     //         layer.msg(res.msg, {icon: 1});
+        //     //         insTb.reload({page: {curr: 1}});
+        //     //     } else {
+        //     //         layer.msg(res.msg, {icon: 2, anim: 6});
+        //     //     }
+        //     // });
+        // });
+
+        $(document).on('click', '#signUp', function(obj) {
+            layer.msg('响应点击事件');
+            var actId = $(this).attr("actId");
+            var actName = $(this).attr("actName");
+            var leaderId = $(this).attr("leaderId");
+
+            console.log(actId);
+            console.log(actName);
+            console.log(leaderId);
+            var data = {'actId':actId, 'actName':actName, 'leaderId':leaderId};
+
+            var loadIndex = layer.load(2);
+            $.post('schoolActivity/signUpAct', data, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1});
+                } else {
+                    layer.msg(res.msg, {icon: 2, anim: 6});
+                }
+            });
+
+        });
+
+        // 项目
+        $.get('schoolActivity/page', function (res) {
+            dataGrid.render({
+                elem: '#demoCardList1',
+                templet: '#demoCardItem1',
+                data: res.data,
+                page: {limit: 8, limits: [8, 16, 24, 32, 40]}
+            });
+        });
+
+        dataGrid.on('item(demoCardList1)', function (obj) {
+            showDetailModel(obj.data);
+        });
+
+        function showDetailModel(data) {
+            laytpl(eDialogInfoDialog.innerHTML).render(data, function (html) {
+                admin.open({
+                    type: 1,
+                    title: '查看详情',
+                    area: '550px',
+                    content: html,
+                    success: function () {
+                    }
+                });
+            });
+        }
+
+
+    });
+</script>
+</body>
+</html>

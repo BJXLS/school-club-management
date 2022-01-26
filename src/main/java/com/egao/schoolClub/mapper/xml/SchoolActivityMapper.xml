@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.egao.schoolClub.mapper.SchoolActivityMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*, b.club_name
+        FROM school_activity a, club b
+        <where>
+            <if test="page!=null and page.pageData!=null">
+				<if test="page.pageData.actId != null">
+					AND a.act_id = #{page.pageData.actId}
+				</if>
+				<if test="page.pageData.clubId != null">
+					AND a.club_id = #{page.pageData.clubId}
+                </if>
+				<if test="page.pageData.actName != null">
+                    AND a.act_name LIKE CONCAT('%', #{page.pageData.actName}, '%')
+				</if>
+				<if test="page.pageData.actIcon != null">
+                    AND a.act_icon LIKE CONCAT('%', #{page.pageData.actIcon}, '%')
+				</if>
+				<if test="page.pageData.actIntroduce != null">
+                    AND a.act_introduce LIKE CONCAT('%', #{page.pageData.actIntroduce}, '%')
+				</if>
+				<if test="page.pageData.actType != null">
+					AND a.act_type = #{page.pageData.actType}
+                </if>
+				<if test="page.pageData.maxPeopleNumber != null">
+					AND a.max_people_number = #{page.pageData.maxPeopleNumber}
+                </if>
+				<if test="page.pageData.nowPeopleNumber != null">
+					AND a.now_people_number = #{page.pageData.nowPeopleNumber}
+                </if>
+				<if test="page.pageData.leaderId != null">
+					AND a.leader_id = #{page.pageData.leaderId}
+                </if>
+				<if test="page.pageData.status != null">
+					AND a.status = #{page.pageData.status}
+                </if>
+				<if test="page.pageData.startTime != null">
+                    AND a.start_time LIKE CONCAT('%', #{page.pageData.startTime}, '%')
+				</if>
+				<if test="page.pageData.endTime != null">
+                    AND a.end_time LIKE CONCAT('%', #{page.pageData.endTime}, '%')
+				</if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+            </if>
+            AND a.club_id = b.club_id
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.egao.schoolClub.entity.SchoolActivity">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.egao.schoolClub.entity.SchoolActivity">
+        <include refid="relSelect"></include>
+    </select>
+
+    <select id="selectByClubIds" resultType="java.lang.Integer">
+        SELECT a.*
+        FROM school_activity a
+        WHERE a.club_id IN
+        <foreach collection="clubIds" open="(" close=")" separator="," item="clubId">
+            #{clubId}
+        </foreach>
+        AND a.deleted=0    </select>
+
+</mapper>

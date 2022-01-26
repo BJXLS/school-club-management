@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="管理"/>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief" lay-filter="tableXTab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">我的申请</li>
+                <li>我的审核</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <!-- 数据表格 -->
+                    <table id="auditTable" lay-filter="auditTable"></table>
+                </div>
+                <div class="layui-tab-item">
+                    <!-- 数据表格 -->
+                    <table id="auditTable1" lay-filter="auditTable1"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="auditTbBar">
+    <a class="layui-btn layui-btn-danger layui-btn-xs"
+       data-dropdown="#auditTbDelDrop{{d.LAY_INDEX}}" no-shade="true">删除</a>
+    <div class="dropdown-menu-nav dropdown-popconfirm dropdown-top-right layui-hide"
+         id="auditTbDelDrop{{d.LAY_INDEX}}"
+         style="max-width: 200px;white-space: normal;min-width: auto;margin-left: 10px;">
+        <div class="dropdown-anchor"></div>
+        <div class="dropdown-popconfirm-title">
+            <i class="layui-icon layui-icon-help"></i>
+            确定要删除吗？
+        </div>
+        <div class="dropdown-popconfirm-btn">
+            <a class="layui-btn" btn-cancel>取消</a>
+            <a class="layui-btn layui-btn-normal" lay-event="del">确定</a>
+        </div>
+    </div>
+</script>
+
+<!-- 表格2操作列 -->
+<script type="text/html" id="auditTbBar1">
+    <a class="layui-btn layui-btn-danger layui-btn-xs"
+       data-dropdown="#clubTbDelDrop{{d.LAY_INDEX}}" no-shade="true">审核通过</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs"
+       lay-event="changeStatusBack"  no-shade="true">审核驳回</a>
+
+    <div class="dropdown-menu-nav dropdown-popconfirm dropdown-top-right layui-hide"
+         id="clubTbDelDrop{{d.LAY_INDEX}}"
+         style="max-width: 200px;white-space: normal;min-width: auto;margin-left: 10px;">
+        <div class="dropdown-anchor"></div>
+        <div class="dropdown-popconfirm-title">
+            <i class="layui-icon layui-icon-help"></i>
+            确定要审核通过吗？
+        </div>
+        <div class="dropdown-popconfirm-btn">
+            <a class="layui-btn" btn-cancel>取消</a>
+            <a class="layui-btn layui-btn-normal" lay-event="changeStatusPass">确定</a>
+        </div>
+    </div>
+</script>
+
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'admin', 'dropdown', 'element'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var admin = layui.admin;
+        var element = layui.element;
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#auditTable',
+            url: 'audit/page',
+            page: true,
+            toolbar: ['<p>','</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'auditName', title: '名称', sort: true},
+                {field: 'result', title: '结果', templet: function (d) {
+                        if (d.result == 0)
+                            return '<span class="layui-badge layui-badge-green">审核通过</span>';
+                        else if (d.result == 1)
+                            return  '<span class="layui-badge layui-badge-red">审核驳回</span>';
+                        else
+                            return '<span class="layui-badge layui-badge-gray">未审核</span>';
+                    }, align: 'center', sort: true},
+                // {field: 'applicantId', title: '申请事件id', sort: true},
+                {field: 'remark', title: '备注', sort: true},
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true
+                },
+                {title: '操作', toolbar: '#auditTbBar', align: 'center', width: 200, minWidth: 200}
+            ]]
+        });
+
+        /* 渲染表格 */
+        var insTb1 = tableX.render({
+            elem: '#auditTable1',
+            url: 'audit/pageMyAudit',
+            page: true,
+            toolbar: ['<p>','</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'auditName', title: '名称', sort: true, width: 200},
+                {field: 'trueName', title: '申请人', templet: '<div>{{d.user.trueName}}</div>', sort: true},
+                {field: 'studentNumber', title: '申请人学号', templet: '<div>{{d.user.studentNumber}}</div>', sort: true, width:150},
+                {field: 'studentClass', title: '申请人班级', templet: '<div>{{d.user.studentClass}}</div>', sort: true},
+                {field: 'result', title: '结果', templet: function (d) {
+                        if (d.result == 0)
+                            return '<span class="layui-badge layui-badge-green">审核通过</span>';
+                        else if (d.result == 1)
+                            return  '<span class="layui-badge layui-badge-red">审核驳回</span>';
+                        else
+                            return '<span class="layui-badge layui-badge-gray">未审核</span>';
+                    }, align: 'center', sort: true},
+                {field: 'remark', title: '备注', sort: true},
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true
+                },
+                {title: '操作', toolbar: '#auditTbBar1', align: 'center', width: 300, minWidth: 200}
+            ]]
+        });
+
+        /* 表格搜索 */
+        form.on('submit(auditTbSearch)', function (data) {
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(auditTable)', function (obj) {
+            if ('edit' === obj.event) { // 修改
+                showEditModel(obj.data);
+            } else if ('del' === obj.event) { // 删除
+                doDel(obj);
+            }
+        });
+
+        /* 表格2工具条点击事件 */
+        table.on('tool(auditTable1)', function (obj) {
+            if ('changeStatusPass' === obj.event) {
+                changeStatusPass(obj.data);
+            } else if ('changeStatusBack' === obj.event) {
+                changeStatusBack(obj.data);
+            }
+        });
+
+        // 审核通过
+        function changeStatusPass(data) {
+            console.log(data);
+            var loadIndex = layer.load(2);
+            // 删除转换字段
+            delete data.createTime;
+            delete data.updateTime;
+            delete data.user;
+
+            $.post('audit/auditPass', data, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1});
+                    insTb.reload({page: {curr: 1}});
+                    insTb1.reload({page: {curr: 1}});
+                } else {
+                    layer.msg(res.msg, {icon: 2, anim: 6});
+                }
+            });
+        }
+
+        // 审核驳回
+        function changeStatusBack(data) {
+            var loadIndex = layer.load(2);
+            // 删除转换字段
+            delete data.createTime;
+            delete data.updateTime;
+            delete data.user;
+            layer.prompt({
+                title: '填写回复',
+                shade: .1,
+                offset: '165px',
+                skin: 'layui-layer-admin layui-layer-prompt',
+                formType: 2
+            }, function (value, index, elem) {
+                // console.log(value);
+                layer.close(index);
+                // layer.msg('评论成功', {icon: 1});
+                data.remark = value;
+                $.post('audit/auditBack', data, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                        insTb1.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            });
+            layer.close(loadIndex);
+
+        }
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(auditTable)', function (obj) {
+            if ('add' === obj.event) { // 添加
+                showEditModel();
+            } else if ('del' === obj.event) { // 删除
+                var checkRows = table.checkStatus('auditTable');
+                if (0 === checkRows.data.length) {
+                    return layer.msg('请选择要删除的数据', {icon: 2, anim: 6});
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.auditId;
+                });
+                doDel({ids: ids});
+            }
+        });
+
+
+
+        /* 显示表单弹窗 */
+        function showEditModel(mData) {
+            admin.open({
+                type: 1,
+                title: (mData ? '修改' : '添加') + '',
+                content: $('#auditEditDialog').html(),
+                success: function (layero, dIndex) {
+                    // 回显表单数据
+                    form.val('auditEditForm', mData);
+                    // 表单提交事件
+                    form.on('submit(auditEditSubmit)', function (data) {
+                        var loadIndex = layer.load(2);
+                        $.post(mData ? 'audit/update' : 'audit/save', data.field, function (res) {
+                            layer.close(loadIndex);
+                            if (0 === res.code) {
+                                layer.close(dIndex);
+                                layer.msg(res.msg, {icon: 1});
+                                insTb.reload({page: {curr: 1}});
+                            } else {
+                                layer.msg(res.msg, {icon: 2, anim: 6});
+                            }
+                        });
+                        return false;
+                    });
+                }
+            });
+        }
+
+        /* 删除 */
+        function doDel(obj) {
+            if (obj.ids) {  // 批量删除
+                admin.confirm('确定要删除选中数据吗？', function (i) {
+                    layer.close(i);
+                    var loadIndex = layer.load(2);
+                    admin.req('audit/removeBatch', JSON.stringify(obj.ids), function (res) {
+                        layer.close(loadIndex);
+                        if (0 === res.code) {
+                            layer.msg(res.msg, {icon: 1});
+                            insTb.reload({page: {curr: 1}});
+                        } else {
+                            layer.msg(res.msg, {icon: 2, anim: 6});
+                        }
+                    }, 'post');
+                });
+            } else {  // 单个删除
+                var loadIndex = layer.load(2);
+                $.get('audit/remove', {id: obj.data.auditId}, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            }
+        }
+
+        // 切换Tab重置表格尺寸
+        element.on('tab(tableXTab)', function (data) {
+            var tableIds = ['auditTable', 'auditTable1'];
+            table.resize(tableIds[data.index]);
+        });
+
+    });
+</script>
+</body>
+</html>
