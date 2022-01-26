@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/school-club?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
     username: root
-    password: 1999119
+    password:
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
 
