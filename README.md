@@ -65,33 +65,33 @@
 
 + 登录
 
-![image-20220126125753490](src\main\resources\static\assets\images\readme\image-20220126125753490.png)
+![image-20220126125753490](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126125753490.png)
 
-![image-20220126125811940](src\main\resources\static\assets\images\readme\image-20220126125811940.png)
+![image-20220126125811940](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126125811940.png)
 
 + 社团活动相关
 
-![image-20220126124035443](src\main\resources\static\assets\images\readme\image-20220126124035443.png)
+![image-20220126124035443](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126124035443.png)
 
-![image-20220126124057138](src\main\resources\static\assets\images\readme\image-20220126124057138.png)
+![image-20220126124057138](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126124057138.png)
 
-![image-20220126124232997](src\main\resources\static\assets\images\readme\image-20220126124232997.png)
+![image-20220126124232997](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126124232997.png)
 
-![image-20220126124423758](src\main\resources\static\assets\images\readme\image-20220126124423758.png)
+![image-20220126124423758](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126124423758.png)
 
-![image-20220126124651646](src\main\resources\static\assets\images\readme\image-20220126124651646.png)
+![image-20220126124651646](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126124651646.png)
 
-![image-20220126124706905](src\main\resources\static\assets\images\readme\image-20220126124706905.png)
+![image-20220126124706905](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126124706905.png)
 
-![image-20220126124724932](src\main\resources\static\assets\images\readme\image-20220126124724932.png)
+![image-20220126124724932](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126124724932.png)
 
 + 管理员相关
 
-![image-20220126133020905](src\main\resources\static\assets\images\readme\image-20220126133020905.png)
+![image-20220126133020905](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126133020905.png)
 
-![image-20220126133041233](src\main\resources\static\assets\images\readme\image-20220126133041233.png)
+![image-20220126133041233](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126133041233.png)
 
-![image-20220126133052918](src\main\resources\static\assets\images\readme\image-20220126133052918.png)
+![image-20220126133052918](https://github.com/BJXLS/school-club-management/blob/master/src/main/resources/static/assets/images/readme/image-20220126133052918.png)
 
 ## 备注
 
