@@ -65,33 +65,38 @@
 
 + 登录
 
-![image-20220126125753490](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126125753490.png)
+![image-20220126125753490](src\main\resources\static\assets\images\readme\image-20220126125753490.png)
 
-![image-20220126125811940](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126125811940.png)
+![image-20220126125811940](src\main\resources\static\assets\images\readme\image-20220126125811940.png)
 
 + 社团活动相关
 
-![image-20220126124035443](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126124035443.png)
+![image-20220126124035443](src\main\resources\static\assets\images\readme\image-20220126124035443.png)
 
-![image-20220126124057138](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126124057138.png)
+![image-20220126124057138](src\main\resources\static\assets\images\readme\image-20220126124057138.png)
 
-![image-20220126124232997](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126124232997.png)
+![image-20220126124232997](src\main\resources\static\assets\images\readme\image-20220126124232997.png)
 
-![image-20220126124423758](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126124423758.png)
+![image-20220126124423758](src\main\resources\static\assets\images\readme\image-20220126124423758.png)
 
-![image-20220126124651646](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126124651646.png)
+![image-20220126124651646](src\main\resources\static\assets\images\readme\image-20220126124651646.png)
 
-![image-20220126124706905](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126124706905.png)
+![image-20220126124706905](src\main\resources\static\assets\images\readme\image-20220126124706905.png)
 
-![image-20220126124724932](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126124724932.png)
+![image-20220126124724932](src\main\resources\static\assets\images\readme\image-20220126124724932.png)
 
 + 管理员相关
 
-![image-20220126133020905](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126133020905.png)
+![image-20220126133020905](src\main\resources\static\assets\images\readme\image-20220126133020905.png)
 
-![image-20220126133041233](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126133041233.png)
+![image-20220126133041233](src\main\resources\static\assets\images\readme\image-20220126133041233.png)
 
-![image-20220126133052918](C:\Users\hi\AppData\Roaming\Typora\typora-user-images\image-20220126133052918.png)
+![image-20220126133052918](src\main\resources\static\assets\images\readme\image-20220126133052918.png)
 
+## 备注
 
++ 数据库设计后期开发过程中有所更改，与附件“数据库说明”并非完全相同。
++ 图中图片存储使用了远程图库
++ 邮件功能需要自行配置一下
++ 系统相关申请内容都需要进行审核成功后才会显示，否则只会在消息大厅显示相关内容。
 
